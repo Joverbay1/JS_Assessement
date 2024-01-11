@@ -1,0 +1,31 @@
+body {
+  background-color: black;
+  color: white;
+  font-family: "Press Start 2P", cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#gameCanvas {
+  border: 1px solid white;
+  background-color: black;
+}
+
+#score-board {
+  margin-top: 20px;
+}
+
+#score-board p {
+  font-size: 1.2em;
+  margin: 5px;
+}
