@@ -1,7 +1,7 @@
 body {
   background-color: black;
   color: white;
-  font-family: "Press Start 2P", cursive;
+  font-family: "Press Start 2P", system-ui;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,38 +21,6 @@ body {
   background-color: black;
 }
 
-.ghost {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-}
-
-#ghost1 {
-  background-color: red;
-  left: 100px;
-  top: 100px;
-  box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.8);
-}
-#ghost2 {
-  background-color: pink;
-  left: 200px;
-  top: 200px;
-  box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.8);
-}
-#ghost3 {
-  background-color: lightblue;
-  left: 300px;
-  top: 300px;
-  box-shadow: 0 0 5px 2px rgba(173, 216, 230, 0.8);
-}
-#ghost4 {
-  background-color: orange;
-  left: 400px;
-  top: 400px;
-  box-shadow: 0 0 5px 2px rgba(255, 165, 0, 0.8);
-}
-
 #score-board {
   margin-top: 20px;
 }
@@ -60,35 +28,4 @@ body {
 #score-board p {
   font-size: 1.2em;
   margin: 5px;
-}
-
-#game-over {
-  display: none;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 20px;
-  border-radius: 10px;
-}
-
-#game-over h1 {
-  font-size: 2em;
-  margin-bottom: 10px;
-}
-
-#restart-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2em;
-  cursor: pointer;
-}
-
-#restart-button:hover {
-  background-color: #45a049;
 }

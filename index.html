@@ -3,24 +3,21 @@
   <head>
     <title>Pac-Man Game</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="game-container">
       <canvas id="gameCanvas" width="560" height="620"></canvas>
-      <div class="ghost" id="ghost1"></div>
-      <div class="ghost" id="ghost2"></div>
-      <div class="ghost" id="ghost3"></div>
-      <div class="ghost" id="ghost4"></div>
       <div id="score-board">
         <p>Score: <span id="score">0</span></p>
         <p>Lives: <span id="lives">3</span></p>
       </div>
-      <div id="game-over">
-        <h1>Game Over</h1>
-        <p id="final-score">Final Score: 0</p>
-        <button id="restart-button">Restart</button>
-      </div>
     </div>
-    <script src="./index.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
