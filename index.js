@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
 
-  // Define the Maze layout
+  // Defines the Maze layout
   const maze = [
     // 0 - dots, 1 - Walls.
     [
@@ -131,15 +131,15 @@ document.addEventListener("DOMContentLoaded", function () {
     ],
   ];
 
-  // Define the game state
+  let score = 0;
+  let lives = 3;
+
+  // Defines the game state
   const gameState = {
     score: 0,
     lives: 3,
     gameover: false,
   };
-
-  let score = 0;
-  let lives = 3;
 
   // Dot variables
   let dots = [
@@ -482,7 +482,7 @@ document.addEventListener("DOMContentLoaded", function () {
     [30, 27],
   ];
 
-  // Define Pac-Man
+  // Defines Pac-Man
   const pacMan = {
     x: canvas.width / 2,
     y: canvas.height / 2,
@@ -492,12 +492,13 @@ document.addEventListener("DOMContentLoaded", function () {
     dy: 0,
   };
 
+  // Defines the maze
   const tileSize = 20; // Size of each tile in pixels
   const dotRadius = 3; // Radius of the dots
   const powerPelletSize = 8; // Size of the power pellets
 
   const powerPellets = [
-    // Define the positions of power pellets in the maze
+    // Defines the positions of power pellets in the maze
     { row: 4, col: 6 },
     { row: 23, col: 2 },
     { row: 3, col: 26 },
@@ -508,33 +509,32 @@ document.addEventListener("DOMContentLoaded", function () {
     { row: 29, col: 24 },
     { row: 14, col: 6 },
     { row: 29, col: 6 },
-    // Add more power pellet positions as needed
   ];
 
-  // Define the Ghost objects
+  // Defines the Ghost objects
   const ghosts = [
     {
       x: 13 * tileSize, // x position of ghost
       y: 14 * tileSize, // y position of ghost
-      speed: 1, // ghost speed
+      speed: 2, // ghost speed
       color: "red", // ghost color
     },
     {
       x: 12 * tileSize,
       y: 16 * tileSize,
-      speed: 1,
+      speed: 2,
       color: "hotpink",
     },
     {
       x: 15 * tileSize,
       y: 16 * tileSize,
-      speed: 1,
+      speed: 2,
       color: "orange",
     },
     {
       x: 16 * tileSize,
       y: 14 * tileSize,
-      speed: 1,
+      speed: 2,
       color: "lightseagreen",
     },
   ];
@@ -543,78 +543,74 @@ document.addEventListener("DOMContentLoaded", function () {
   function checkCollision() {
     for (let i = 0; i < ghosts.length; i++) {
       const ghost = ghosts[i];
-      // Calculate distance between Pac-Man and the ghost
-      const dx = pacMan.x - ghost.x;
-      const dy = pacMan.y - ghost.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      const distance = Math.hypot(pacMan.x - ghost.x, pacMan.y - ghost.y);
 
-      // Check if there is a collision
       if (distance < 10) {
-        // Adjust the threshold as needed
-        // Pac-Man collided with a ghost
+        pacMan.x = startingX; // Resets Pac-Man's X position to the starting position
+        pacMan.y = startingY; // Resets Pac-Man's Y position to the starting position
         gameState.lives--; // Decrement the number of lives
 
         if (gameState.lives <= 0) {
-          // Game over condition: No more lives left
-          gameState.gameover = true;
-          // Add code to handle game over, such as displaying a message or restarting the game
-        } else {
-          // Reset Pac-Man's position
-          pacMan.x = 0;
-          pacMan.y = 0;
-          // Add any additional logic for resetting game state after collision
+          gameState.gameOver = true;
+          // Displays the "Game Over" message
+          ctx.font = "bold 30px Arial";
+          ctx.fillStyle = "white";
+          ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
+
+          // Restarts the game after a delay
+          setTimeout(() => {
+            resetGame();
+            update();
+          }, 3000); // Adjust the delay as needed
         }
+
+        break; // Exits the loop to avoid continuing collision checks
       }
     }
   }
 
-  // Check if Pac-Man collides with a wall
+  // Checks if Pac-Man collides with a wall
   const TILE_SIZE = 20;
 
   function checkWallCollision() {
     const row = Math.floor(pacMan.y / TILE_SIZE);
     const col = Math.floor(pacMan.x / TILE_SIZE);
 
-    // Check if Pac-Man is within the bounds of the maze
+    // Checks if Pac-Man is within the bounds of the maze
     if (row >= 0 && row < maze.length && col >= 0 && col < maze[row].length) {
       const currentTile = maze[row][col];
       if (currentTile === 1) {
-        // Pac-Man collided with a wall
+        // Pac-Man collideds with a wall
 
-        // Reset Pac-Man's position to the previous valid position
+        // Resets Pac-Man's position to the previous valid position
         pacMan.x -= pacMan.dx;
         pacMan.y -= pacMan.dy;
 
-        // Set Pac-Man's velocity or position to 0 to stop movement
+        // Sets Pac-Man's velocity or position to 0 to stop movement
         pacMan.dx = 0;
         pacMan.dy = 0;
       }
     }
   }
 
-  // Check for collision with dots
-  function checkDotCollision() {
-    const pacManRow = Math.floor(pacMan.y / TILE_SIZE);
-    const pacManCol = Math.floor(pacMan.x / TILE_SIZE);
+  // Function to check collision between Pac-Man and ghosts
+  const startingX = 0;
+  const startingY = 0;
 
+  // Checks collision between dots and Pac-Man
+  function checkDotCollision() {
     for (let i = 0; i < dots.length; i++) {
       const dot = dots[i];
-      const dotRow = dot[1];
-      const dotCol = dot[0];
-
-      if (pacManRow === dotRow && pacManCol === dotCol) {
-        // Dot collided with Pac-Man
-        dots.splice(i, 1);
-        // Remove the dot from the array
-        score += 10;
-        // Increase the score
-        break;
+      if (pacMan.x === dot[0] && pacMan.y === dot[1]) {
+        dots.splice(i, 1); // Removes the dot from the array
+        gameState.score += 10; // Increase the score by 10 points
       }
     }
   }
 
+  // Ghosts move at random
   function moveGhostRandom(ghost) {
-    // Generate random movement direction
+    // Generates random movement direction
     const directions = [
       { dx: -1, dy: 0 }, // Left
       { dx: 1, dy: 0 }, // Right
@@ -625,11 +621,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const randomDirection =
       directions[Math.floor(Math.random() * directions.length)];
 
-    // Move the ghost in the random direction
+    // Moves the ghost in the random direction
     ghost.x += randomDirection.dx * ghost.speed;
     ghost.y += randomDirection.dy * ghost.speed;
   }
 
+  // Draws Maze
   function drawMaze() {
     for (let row = 0; row < maze.length; row++) {
       for (let col = 0; col < maze[row].length; col++) {
@@ -638,20 +635,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const tile = maze[row][col];
 
         if (tile === 1) {
-          // Draw walls
+          // Draws walls
           ctx.fillStyle = "blue";
           ctx.fillRect(tileX, tileY, tileSize, tileSize);
         } else if (tile === 0) {
-          // Draw pathways
+          // Draws pathways
           ctx.fillStyle = "black";
           ctx.fillRect(tileX, tileY, tileSize, tileSize);
-          // Draw dots on the pathways
+          // Draws dots on the pathways
           drawDot(tileX + tileSize / 2, tileY + tileSize / 2);
         }
       }
     }
 
-    // Draw power pellets
+    // Draws power pellets
     ctx.fillStyle = "purple";
     powerPellets.forEach((powerPellet) => {
       const pelletX = powerPellet.col * tileSize + tileSize / 2;
@@ -663,6 +660,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Draws dots on the maze
   function drawDot(x, y) {
     ctx.beginPath();
     ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -671,6 +669,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx.closePath();
   }
 
+  // Draws Ghosts on the maze
   function drawGhost(ghost) {
     const ghostRadius = tileSize / 1.25; // Adjust the size of the ghost
     ctx.beginPath();
@@ -680,6 +679,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx.closePath();
   }
 
+  // Draws the Pac=Man on the maze
   function drawPacMan() {
     ctx.beginPath();
     ctx.arc(pacMan.x, pacMan.y, pacMan.size, 0.2 * Math.PI, 1.8 * Math.PI); // Simple Pac-Man shape
@@ -687,6 +687,24 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx.fillStyle = "yellow";
     ctx.fill();
     ctx.closePath();
+  }
+
+  // Function to handle game over
+  function gameOver() {
+    // Displays game over message or performs any desired actions
+    alert("Game Over");
+    // Restart the game
+    resetGame();
+  }
+
+  // Function to reset the game
+  function resetGame() {
+    // Resets game state, player position, etc. as needed
+    gameState.score = 0;
+    gameState.lives = 3;
+    gameState.gameover = false;
+    pacMan.x = 0;
+    pacMan.y = 0;
   }
 
   // Game Loop
@@ -703,44 +721,58 @@ document.addEventListener("DOMContentLoaded", function () {
       drawGhost(ghost);
     });
 
-    // Compare the position of Pac-Man with each ghost
+    // Compares the position of Pac-Man with each ghost
     if (pacMan.x === ghosts.x && pacMan.y === ghosts.y) {
       // Pac-Man collided with a ghost
       gameState.lives--;
-
+      // Checks if game over condition is met
       if (gameState.lives <= 0) {
         // Game Over condition: No more lives left
         gameState.gameOver = true;
-        // Add code to handle game over, such as displaying a message or restarting the game
+        // Displays the 'Game Over' message
+        ctx.font = "bold 30px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
+
+        // Restarts the game after a delay
+        setTimeout(() => {
+          resetGame();
+          update();
+        }, 3000); // you can adjust the delay as needed
       } else {
-        // Reset Pac-Man's position
+        // Resets Pac-Man's position
         pacMan.x = 0;
         pacMan.y = 0;
-        // Add any additional logic for resetting game state after collision
       }
+      return;
     }
 
-    // Update Pac-Man's position
+    // Updates Pac-Man's position
     pacMan.x += pacMan.dx;
     pacMan.y += pacMan.dy;
 
-    // Check for collisions with ghosts
+    // Checks for collisions with ghosts
     checkCollision();
 
-    // Check wall collision
+    // Checks wall collision
     checkWallCollision();
 
-    // Check dot collision
+    // Checks dot collision
     checkDotCollision();
+
+    // Updates the score and lives display
+    document.getElementById("score").textContent = gameState.score;
+    document.getElementById("lives").textContent = gameState.lives;
 
     drawPacMan();
 
-    // Call the update function recursively
+    // Calls the update function recursively
     if (!gameState.gameOver) {
       requestAnimationFrame(update); // Call update again
     }
   }
 
+  // Moves Player(Pac-Man) around maze
   function movePacMan(e) {
     pacMan.dx = 0;
     pacMan.dy = 0;
@@ -753,7 +785,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.key === "ArrowRight") pacMan.dx = speed;
   }
 
-  // Register the event listener and start the game loop
+  // Registers the event listener and start the game loop
   document.addEventListener("keydown", movePacMan);
 
   update(); // Start the game loop
