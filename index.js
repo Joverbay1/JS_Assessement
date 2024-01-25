@@ -484,9 +484,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Defines Pac-Man
   const pacMan = {
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    size: 20,
+    x: canvas.width / 20,
+    y: canvas.height / 20,
+    size: 15,
     speed: 2,
     dx: 2,
     dy: 0,
@@ -582,9 +582,17 @@ document.addEventListener("DOMContentLoaded", function () {
       if (currentTile === 1) {
         // Pac-Man collideds with a wall
 
-        // Resets Pac-Man's position to the previous valid position
+        // Resets Pac-Man's and Ghosts position to the previous valid position
+        const ghostStartingX = [13, 12, 15, 16];
+        const ghostStartingY = [14, 16, 16, 14];
+
         pacMan.x -= pacMan.dx;
         pacMan.y -= pacMan.dy;
+
+        ghosts.forEach((ghost, index) => {
+          ghost.x = ghostStartingX[index];
+          ghost.y = ghostStartingY[index];
+        });
 
         // Sets Pac-Man's velocity or position to 0 to stop movement
         pacMan.dx = 0;
@@ -594,8 +602,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to check collision between Pac-Man and ghosts
-  const startingX = 0;
-  const startingY = 0;
+  const startingX = 20;
+  const startingY = 20;
 
   // Checks collision between dots and Pac-Man
   function checkDotCollision() {
@@ -699,12 +707,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to reset the game
   function resetGame() {
-    // Resets game state, player position, etc. as needed
+    pacMan.x = startingX;
+    pacMan.y = startingY;
+
+    ghosts.forEach((ghost, index) => {
+      ghost.x = ghostStartingX[index];
+      ghost.y = ghostStartingY[index];
+    });
+
     gameState.score = 0;
     gameState.lives = 3;
-    gameState.gameover = false;
-    pacMan.x = 0;
-    pacMan.y = 0;
+    gameState.gameOver = false;
   }
 
   // Game Loop
@@ -733,6 +746,15 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.font = "bold 30px Arial";
         ctx.fillStyle = "white";
         ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
+
+        // Check if game over condition is met
+        if (gameState.lives <= 0 || dots.length === 0) {
+          gameState.gameOver = true;
+          // Displays the 'Game Over' message
+          ctx.font = "bold 30px Arial";
+          ctx.fillStyle = "white";
+          ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
+        }
 
         // Restarts the game after a delay
         setTimeout(() => {
@@ -772,6 +794,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Function to handle key presses
+  function handleKeyPress(event) {
+    if (event.keyCode === 13 && gameState.gameOver) {
+      // 'Enter' key is pressed and game over condition is met
+      resetGame(); // Reset game state
+      update(); // Restart the game
+    }
+  }
+
   // Moves Player(Pac-Man) around maze
   function movePacMan(e) {
     pacMan.dx = 0;
@@ -787,6 +818,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Registers the event listener and start the game loop
   document.addEventListener("keydown", movePacMan);
+  document.addEventListener("keydown", handleKeyPress);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === 13) {
+      if (gameState.gameOver) {
+        resetGame();
+        update();
+      }
+    }
+  });
 
   update(); // Start the game loop
 });
